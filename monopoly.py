@@ -78,6 +78,18 @@ def pay_rent(player, space, players, board):
             if p["name"] == space["owner"]:
                 p["money"] = p["money"] + rent
 
+def is_bankrupt(player):
+    """A player is bankrupt if their money goes below zero."""
+    return player["money"] < 0
+
+def find_winner(players):
+    """Find the player with the most money."""
+    winner = players[0]
+    for player in players:
+        if player["money"] > winner["money"]:
+            winner = player
+    return winner
+
 
 board = load_board("board.json")
 rolls = load_rolls("rolls_1.json")
@@ -88,7 +100,6 @@ turn_index = 0
 
 while turn_index < total_rolls:
     dice_roll = rolls[turn_index]
-
     current_player = players[turn_index % len(players)]
 
     move_player(current_player, dice_roll, len(board))
@@ -96,7 +107,12 @@ while turn_index < total_rolls:
     landed_space = board[current_player["position"]]
     buy_property(current_player, landed_space)
     pay_rent(current_player, landed_space, players, board)
-    
+
+    if is_bankrupt(current_player):
+        print(f"{current_player['name']} is bankrupt!")
+        break
+
+    landed_on = landed_space["name"]
     print(
         f"{current_player['name']} rolls {dice_roll}, "
         f"lands on {landed_on} "
@@ -105,3 +121,12 @@ while turn_index < total_rolls:
     )
 
     turn_index += 1
+
+# Game over - print results
+print(f"\n=== Game Over ===")
+for player in players:
+    space_name = board[player["position"]]["name"]
+    print(f"  {player['name']}: money=${player['money']}, position={space_name}")
+
+winner = find_winner(players)
+print(f"Winner: {winner['name']} with ${winner['money']}")
