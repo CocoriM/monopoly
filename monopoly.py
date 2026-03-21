@@ -40,6 +40,17 @@ def move_player(player, dice_roll, board_size):
     if new_position <= old_position:
         player["money"] += 1
 
+def buy_property(player, space):
+    """If the space is an unowned property, the player buy it."""
+    is_property = space["type"] == "property"
+    has_no_owner = space.get("owner") is None
+
+    if is_property and has_no_owner:
+        price = space["price"]
+        player["money"] = player["money"] - price
+        space["owner"] = player["name"]
+
+
 board = load_board("board.json")
 rolls = load_rolls("rolls_1.json")
 players = create_players()
