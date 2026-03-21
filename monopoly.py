@@ -17,50 +17,49 @@ def load_rolls(file_path):
     txt = _read_file(file_path)
     return _parse_json(txt)
 
+def create_players():
+    """
+    Create a list of player and wrap the player's attributes into a dictionary,
+    set money and position to default values.
+    """
+    names = ["Peter", "Billy", "Charlotte", "Sweedal"]
+    players = []
+
+    for name in names:
+        player_dict = {"name": name, "money": 16, "position": 0}
+        players.append(player_dict)
+    return players
+
+def move_player(player, dice_roll, board_size):
+    """Move a player forward by dice_roll steps, wrapping around the board."""
+    old_position = player["position"]
+    new_position = (old_position + dice_roll) % board_size
+    player["position"] = new_position
+
+    # If new position is smaller, it means they passed GO
+    if new_position <= old_position:
+        player["money"] += 1
+
 board = load_board("board.json")
 rolls = load_rolls("rolls_1.json")
+players = create_players()
 
-print("=== 棋盘 ===")
-for i, space in enumerate(board):
-    print(f"  格子 {i}: {space}")
+total_rolls = len(rolls)
+turn_index = 0
 
-print(f"\n=== 骰子 (共 {len(rolls)} 个) ===")
-print(f"  前10个: {rolls[:10]}")
+while turn_index < total_rolls:
+    dice_roll = rolls[turn_index]
 
+    current_player = players[turn_index % len(players)]
 
-# def make_players():
-#     """
-#     Create a list of player and wrap the player's attributes into a dictionary,
-#     set money and position to default values.
-#     """
-#     players = []
+    move_player(current_player, dice_roll, len(board))
 
-#     for n in names:
-#         player_dict = {"name": n, "money": 16, "position": 0}
-#         players.append(player_dict)
-#     return players
+    landed_on = board[current_player["position"]]["name"]
+    print(
+        f"{current_player['name']} rolls {dice_roll}, "
+        f"lands on {landed_on} "
+        f"(position {current_player['position']}), "
+        f"money=${current_player['money']}"
+    )
 
-
-# def colour_properties(board, colour):
-#     """
-#     type and colour are the keys in each square on the board.
-#     board is a list of dictionaries.
-#     colour specifies the colour to match.
-#     with these two parameters, return all squares whose type is "property" and whose colour matches the given colour.
-#     """
-#     indices = []
-    
-#     for i, square in enumerate(board):
-#         if square["type"] == "property" and square["colour"] == colour:
-#             indices.append(i)
-#     return indices
-
-# def owns_all_colour(board, owner, colour):
-#     colour_indices = colour_properties(board, colour)
-
-#     for idx in colour_indices:
-#         square = board[idx]
-#         square_owner = square.get("owner")
-#         if square_owner != owner:
-#             return False
-#     return True
+    turn_index += 1
