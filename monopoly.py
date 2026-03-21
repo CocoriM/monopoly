@@ -51,6 +51,34 @@ def buy_property(player, space):
         space["owner"] = player["name"]
 
 
+def owns_all_of_colour(owner_name, colour, board):
+    """Check if a player owns all properties of a given colour."""
+    for space in board:
+        is_same_colour = space.get("colour") == colour
+        owned_by_someone_else = space.get("owner") != owner_name
+        if is_same_colour and owned_by_someone_else:
+            return False
+    return True
+
+
+def pay_rent(player, space, players, board):
+    """If the space is owned by someone else, pay rent to the owner."""
+    is_property = space["type"] == "property"
+    has_owner = space.get("owner") is not None
+    is_not_mine = space.get("owner") != player["name"]
+
+    if is_property and has_owner and is_not_mine:
+        rent = space["price"]
+        # Double rent if owner has all properties of this colour
+        if owns_all_of_colour(space["owner"], space["colour"], board):
+            rent = rent * 2
+        player["money"] = player["money"] - rent
+        # Find the owner and give them the rent
+        for p in players:
+            if p["name"] == space["owner"]:
+                p["money"] = p["money"] + rent
+
+
 board = load_board("board.json")
 rolls = load_rolls("rolls_1.json")
 players = create_players()
@@ -65,7 +93,10 @@ while turn_index < total_rolls:
 
     move_player(current_player, dice_roll, len(board))
 
-    landed_on = board[current_player["position"]]["name"]
+    landed_space = board[current_player["position"]]
+    buy_property(current_player, landed_space)
+    pay_rent(current_player, landed_space, players, board)
+    
     print(
         f"{current_player['name']} rolls {dice_roll}, "
         f"lands on {landed_on} "
