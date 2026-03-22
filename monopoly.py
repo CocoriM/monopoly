@@ -91,42 +91,51 @@ def find_winner(players):
     return winner
 
 
-board = load_board("board.json")
-rolls = load_rolls("rolls_1.json")
-players = create_players()
+def play_game(board_file, rolls_file):
+    """Run one complete game with the given board and rolls files."""
+    board = load_board(board_file)
+    rolls = load_rolls(rolls_file)
+    players = create_players()
 
-total_rolls = len(rolls)
-turn_index = 0
+    total_rolls = len(rolls)
+    turn_index = 0
 
-while turn_index < total_rolls:
-    dice_roll = rolls[turn_index]
-    current_player = players[turn_index % len(players)]
+    while turn_index < total_rolls:
+        dice_roll = rolls[turn_index]
+        current_player = players[turn_index % len(players)]
 
-    move_player(current_player, dice_roll, len(board))
+        move_player(current_player, dice_roll, len(board))
 
-    landed_space = board[current_player["position"]]
-    buy_property(current_player, landed_space)
-    pay_rent(current_player, landed_space, players, board)
+        landed_space = board[current_player["position"]]
+        buy_property(current_player, landed_space)
+        pay_rent(current_player, landed_space, players, board)
 
-    if is_bankrupt(current_player):
-        print(f"{current_player['name']} is bankrupt!")
-        break
+        if is_bankrupt(current_player):
+            print(f"{current_player['name']} is bankrupt!")
+            break
 
-    landed_on = landed_space["name"]
-    print(
-        f"{current_player['name']} rolls {dice_roll}, "
-        f"lands on {landed_on} "
-        f"(position {current_player['position']}), "
-        f"money=${current_player['money']}"
-    )
+        landed_on = landed_space["name"]
+        print(
+            f"{current_player['name']} rolls {dice_roll}, "
+            f"lands on {landed_on} "
+            f"(position {current_player['position']}), "
+            f"money=${current_player['money']}"
+        )
 
-    turn_index += 1
+        turn_index += 1
 
-# Game over - print results
-print(f"\n=== Game Over ===")
-for player in players:
-    space_name = board[player["position"]]["name"]
-    print(f"  {player['name']}: money=${player['money']}, position={space_name}")
+    # Game over - print results
+    print(f"\n=== Game Over ===")
+    for player in players:
+        space_name = board[player["position"]]["name"]
+        print(f"  {player['name']}: money=${player['money']}, position={space_name}")
 
-winner = find_winner(players)
-print(f"Winner: {winner['name']} with ${winner['money']}")
+    winner = find_winner(players)
+    print(f"Winner: {winner['name']} with ${winner['money']}")
+
+
+print("=== Game 1 ===")
+play_game("board.json", "rolls_1.json")
+
+print("\n\n=== Game 2 ===")
+play_game("board.json", "rolls_2.json")
