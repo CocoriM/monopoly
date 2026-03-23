@@ -35,10 +35,8 @@ def test_pay_rent_basic():
         {"name": "Fast Kebabs", "price": 1, "colour": "Brown", "type": "property"},
     ]
     pay_rent(player, space, players, board)
-    assert player["money"] == 15   
-    # Billy paid $1
-    assert owner["money"] == 17    
-    # Peter received $1
+    assert player["money"] == 15   # Billy paid $1
+    assert owner["money"] == 17    # Peter received $1
 
 
 def test_pay_rent_double_when_owns_all_colour():
@@ -52,10 +50,8 @@ def test_pay_rent_double_when_owns_all_colour():
         {"name": "Fast Kebabs", "price": 1, "colour": "Brown", "type": "property", "owner": "Peter"},
     ]
     pay_rent(player, space, players, board)
-    assert player["money"] == 14   
-    # Billy paid $1 * 2 = $2
-    assert owner["money"] == 18    
-    # Peter received $2
+    assert player["money"] == 14   # Billy paid $1 * 2 = $2
+    assert owner["money"] == 18    # Peter received $2
 
 
 def test_is_bankrupt():

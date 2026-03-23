@@ -132,9 +132,10 @@ def play_game(board_file, rolls_file):
     print(f"Winner: {winner['name']} with ${winner['money']}")
 
 
-if len(sys.argv) == 3:
-    board_file = sys.argv[1]
-    rolls_file = sys.argv[2]
-    play_game(board_file, rolls_file)
-else:
-    print("Usage: python3 monopoly.py <board_file> <rolls_file>")
+if __name__ == "__main__":
+    if len(sys.argv) == 3:
+        board_file = sys.argv[1]
+        rolls_file = sys.argv[2]
+        play_game(board_file, rolls_file)
+    else:
+        print("Usage: python3 monopoly.py <board_file> <rolls_file>")
