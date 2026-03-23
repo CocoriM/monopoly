@@ -42,7 +42,6 @@ The specifics and implementation of this code is completely up to you!
 Please include a readme with any additional information you would like to include, including instructions on how to test and execute your code.  You may wish to use it to explain any design decisions.
 
 Despite this being a small command line app, please approach this as you would a production problem using whatever approach to coding and testing you feel appropriate.
-# monopoly
 
 ---
 
