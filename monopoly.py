@@ -2,25 +2,16 @@ import json
 import sys
 
 
-def _read_file(file_path):
-    f = open(file_path, 'r', encoding='utf-8')
-    content = f.read()
-    f.close()
-    return content
+NAMES = ["Peter", "Billy", "Charlotte", "Sweedal"]
+STARTING_MONEY = 16
+STARTING_POSITION = 0
+GO_MONNEY = 1
+RENT_MUTLIPLYER = 2
 
 
-def _parse_json(text):
-    return json.loads(text)
-
-
-def load_board(file_path):
-    txt = _read_file(file_path)
-    return _parse_json(txt)
-
-
-def load_rolls(file_path):
-    txt = _read_file(file_path)
-    return _parse_json(txt)
+def load_json(file_path):
+    with open(file_path, "r") as file:
+        return json.load(file)
 
 
 def create_players():
@@ -28,16 +19,14 @@ def create_players():
     Create a list of player and wrap the player's attributes into a dictionary,
     set money and position to default values.
     """
-    names = ["Peter", "Billy", "Charlotte", "Sweedal"]
-    players = []
-    for name in names:
-        player_dict = {"name": name, "money": 16, "position": 0}
-        players.append(player_dict)
-    return players
+    return [
+        {"name": name, "money": STARTING_MONEY, "position": STARTING_POSITION}
+        for name in NAMES
+    ]
 
 
 def buy_property(player, space):
-    """If the space is an unowned property, the player buys it."""
+    """If the space is an unowned property, the player buys it"""
     is_property = space["type"] == "property"
     has_no_owner = space.get("owner") is None
 
@@ -58,7 +47,7 @@ def owns_all_of_colour(owner_name, colour, board):
 
 
 def pay_rent(player, space, players, board):
-    """If the space is owned by someone else, pay rent to the owner."""
+    """If the space is owned by someone else, pay rent to the owner"""
     is_property = space["type"] == "property"
     has_owner = space.get("owner") is not None
     is_not_mine = space.get("owner") != player["name"]
@@ -67,16 +56,16 @@ def pay_rent(player, space, players, board):
         rent = space["price"]
         # Double rent if owner has all properties of this colour
         if owns_all_of_colour(space["owner"], space["colour"], board):
-            rent = rent * 2
+            rent *= RENT_MUTLIPLYER
         player["money"] = player["money"] - rent
         # Find the owner and give them the rent
-        for p in players:
-            if p["name"] == space["owner"]:
-                p["money"] = p["money"] + rent
+        for player in players:
+            if player["name"] == space["owner"]:
+                player["money"] = player["money"] + rent
 
 
 def find_winner(players):
-    """Find the player with the most money."""
+    """Find the player with the most money"""
     winner = players[0]
     for player in players:
         if player["money"] > winner["money"]:
@@ -97,13 +86,13 @@ def move_player(player, dice_roll, board_size):
 
     # If new position is smaller, it means they passed GO
     if new_position <= old_position:
-        player["money"] += 1
+        player["money"] += GO_MONNEY
 
 
 def play_game(board_file, rolls_file):
     """Run one complete game with the given board and rolls files."""
-    board = load_board(board_file)
-    rolls = load_rolls(rolls_file)
+    board = load_json(board_file)
+    rolls = load_json(rolls_file)
     players = create_players()
 
     total_rolls = len(rolls)
