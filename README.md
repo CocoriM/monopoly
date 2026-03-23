@@ -83,7 +83,7 @@ I broke the game into small steps and built them one at a time:
 
 ## Design decisions
 
-- I used **dictionaries** to represent players and board spaces. They are simple and easy to read. I did not use classes because there was no need for methods or complex behaviour.
-- I used a **list** to store players, because the game needs a fixed turn order.
-- I kept everything in **one file** because the project is small. Splitting into multiple files would just make it harder to follow.
+- I used dictionaries to represent players and board spaces. They are simple and easy to read. I did not use classes because there was no need for methods or complex behaviour.
+- I used a list to store players, because the game needs a fixed turn order.
+- I kept everything in one file because the project is small. Splitting into multiple files would just make it harder to follow.
 - The game logic is wrapped in a `play_game()` function, so it is easy to run multiple games with different dice rolls.
