@@ -1,21 +1,27 @@
 import json
+import sys
+
 
 def _read_file(file_path):
     f = open(file_path, 'r', encoding='utf-8')
     content = f.read()
-    f.close() 
+    f.close()
     return content
+
 
 def _parse_json(text):
     return json.loads(text)
+
 
 def load_board(file_path):
     txt = _read_file(file_path)
     return _parse_json(txt)
 
+
 def load_rolls(file_path):
     txt = _read_file(file_path)
     return _parse_json(txt)
+
 
 def create_players():
     """
@@ -24,24 +30,14 @@ def create_players():
     """
     names = ["Peter", "Billy", "Charlotte", "Sweedal"]
     players = []
-
     for name in names:
         player_dict = {"name": name, "money": 16, "position": 0}
         players.append(player_dict)
     return players
 
-def move_player(player, dice_roll, board_size):
-    """Move a player forward by dice_roll steps, wrapping around the board."""
-    old_position = player["position"]
-    new_position = (old_position + dice_roll) % board_size
-    player["position"] = new_position
-
-    # If new position is smaller, it means they passed GO
-    if new_position <= old_position:
-        player["money"] += 1
 
 def buy_property(player, space):
-    """If the space is an unowned property, the player buy it."""
+    """If the space is an unowned property, the player buys it."""
     is_property = space["type"] == "property"
     has_no_owner = space.get("owner") is None
 
@@ -78,9 +74,6 @@ def pay_rent(player, space, players, board):
             if p["name"] == space["owner"]:
                 p["money"] = p["money"] + rent
 
-def is_bankrupt(player):
-    """A player is bankrupt if their money goes below zero."""
-    return player["money"] < 0
 
 def find_winner(players):
     """Find the player with the most money."""
@@ -89,6 +82,22 @@ def find_winner(players):
         if player["money"] > winner["money"]:
             winner = player
     return winner
+
+
+def is_bankrupt(player):
+    """A player is bankrupt if their money goes below zero."""
+    return player["money"] < 0
+
+
+def move_player(player, dice_roll, board_size):
+    """Move a player forward by dice_roll steps, wrapping around the board."""
+    old_position = player["position"]
+    new_position = (old_position + dice_roll) % board_size
+    player["position"] = new_position
+
+    # If new position is smaller, it means they passed GO
+    if new_position <= old_position:
+        player["money"] += 1
 
 
 def play_game(board_file, rolls_file):
@@ -134,8 +143,9 @@ def play_game(board_file, rolls_file):
     print(f"Winner: {winner['name']} with ${winner['money']}")
 
 
-print("=== Game 1 ===")
-play_game("board.json", "rolls_1.json")
-
-print("\n\n=== Game 2 ===")
-play_game("board.json", "rolls_2.json")
+if len(sys.argv) == 3:
+    board_file = sys.argv[1]
+    rolls_file = sys.argv[2]
+    play_game(board_file, rolls_file)
+else:
+    print("Usage: python3 monopoly.py <board_file> <rolls_file>")
